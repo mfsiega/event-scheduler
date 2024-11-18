@@ -16,6 +16,12 @@ const testCreateEvent = {
     name: "Test Event",
 };
 
+const testEndBeforeStart = {
+    startDate: new Date("2024-11-18T15:00:00"),
+    endDate: new Date("2024-11-17T15:00:00"),
+    name: "Test end before start",
+};
+
 function eventMatches(
     e: components.Event,
     expected: { id?: string; startDate: Date; endDate: Date; name: string }
@@ -45,6 +51,14 @@ describe("Server", () => {
                 testCreateEvent
             ).event;
             expect(eventMatches(e, testCreateEvent)).toBeTruthy();
+        });
+
+        it("only allows start date before end date", () => {
+            expect(() => {
+                new EventSchedulerServer(eventStoreWith()).createEvent(
+                    testEndBeforeStart
+                );
+            }).toThrow();
         });
     });
     describe("GetEvents handler", () => {

@@ -7,8 +7,19 @@ export class EventSchedulerServer implements EventScheduler {
     constructor(e: EventStore) {
         this.e = e;
     }
+
+    private validateEvent(r: requests.CreateEvent): void {
+        if (r.name.length === 0) {
+            throw new Error("Name must have non-zero length");
+        }
+        if (r.endDate < r.startDate) {
+            throw new Error("Start date must be before end date");
+        }
+    }
+
     createEvent(r: requests.CreateEvent): responses.CreateEvent {
         const id = uuid();
+        this.validateEvent(r);
         const event = {
             id: id,
             name: r.name,
